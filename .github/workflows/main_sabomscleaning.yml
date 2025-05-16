@@ -1,4 +1,4 @@
-name: Build and deploy ASP.Net Core app to Azure Web App - SabomsCleaning
+name: Build, Test & Deploy to Azure Web App - SabomsCleaning
 
 on:
   push:
@@ -7,19 +7,28 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-test:
     runs-on: windows-latest
     permissions:
       contents: read
 
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4   # FIXAT: detta saknade rätt indrag
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up .NET Core
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.x'
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore CleaningSaboms.sln
+
+      - name: Build solution
+        run: dotnet build CleaningSaboms.sln --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test Tests/CleaningSaboms.Tests.csproj --no-build --verbosity normal
 
       - name: Install EF Core CLI tools
         run: dotnet tool install --global dotnet-ef
@@ -27,21 +36,16 @@ jobs:
       - name: Add EF tools to PATH
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
-      - name: Build project before EF migration
-        run: dotnet build --configuration Release
-        working-directory: CleaningSaboms   # 🔧 din .csproj ligger här
-
-      - name: Apply EF Core migrations
+      - name: Run EF Core migrations
         run: dotnet ef database update --no-build
-        working-directory: CleaningSaboms
+        working-directory: Api
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.DB_CONNECTION_STRING }}
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
-        working-directory: CleaningSaboms
+      - name: Publish app
+        run: dotnet publish Api/CleaningSaboms.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
@@ -49,7 +53,7 @@ jobs:
 
   deploy:
     runs-on: windows-latest
-    needs: build
+    needs: build-and-test
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
@@ -58,7 +62,7 @@ jobs:
       contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact from build
         uses: actions/download-artifact@v4
         with:
           name: .net-app
@@ -66,9 +70,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_50D44505E07E4BEC8E977BA82FAE5AAB }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7EEEAFA2C1344120BEE1A42E487510C7 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_887D57474CCE49C1B7C1DCFDD98E7C5C }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
