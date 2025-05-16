@@ -16,9 +16,5 @@ namespace CleaningSaboms.Models
         [Required]
         [MaxLength(20)]
         public string UserPhone { get; set; } = null!;
-
-        public Guid RoleId { get; set; }
-
-        public ApplicationRole Role { get; set; } = null!;
     }
 }
