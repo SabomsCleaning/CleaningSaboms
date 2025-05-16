@@ -35,11 +35,16 @@ jobs:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
 
-      - name: Apply EF Core migrations
-        run: dotnet ef database update --no-build
-        env: 
-         ConnectionStrings__DefaultConnection: ${{ secrets.DB_CONNECTION_STRING }}
+      - name: Install EF Core CLI tools
+        run: dotnet tool install --global dotnet-ef
 
+      - name: Add EF tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Apply EF Core migrations
+        run: dotnet ef database update --no-build --project ./Api/CleaningSaboms.csproj
+        env:
+          ConnectionStrings__DefaultConnection: ${{ secrets.DB_CONNECTION_STRING }}
 
   deploy:
     runs-on: windows-latest
