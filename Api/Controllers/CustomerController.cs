@@ -18,7 +18,6 @@ namespace CleaningSaboms.Controllers
         }
 
         [HttpPost]
-        [Route("api/customer")]
         public async Task<IActionResult> CreateCustomer([FromBody] CustomerDto customer)
         {
             if (customer == null)
@@ -40,10 +39,9 @@ namespace CleaningSaboms.Controllers
         }
 
         [HttpGet("{id}")]
-        [Route("api/customer/{id}")]
         public async Task <IActionResult> GetCustomer(Guid id)
         {
-            var customer = _context.Customers.FindAsync(id);
+            var customer = await _context.Customers.FindAsync(id);
             if (customer == null)
             {
                 return NotFound("Customer not found.");
