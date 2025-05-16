@@ -37,7 +37,7 @@ jobs:
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
       - name: Apply EF Core migrations
-        run: dotnet ef database update --no-build --project ./Api/CleaningSaboms.csproj
+        run: dotnet ef database update --project ./Api/CleaningSaboms.csproj
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.DB_CONNECTION_STRING }}
 
