@@ -1,8 +1,7 @@
-﻿namespace CleaningSaboms.Models
+﻿namespace CleaningSaboms.Dto
 {
-    public class CustomerEntity
+    public class CustomerDto
     {
-        public Guid Id { get; set; }
         public string CustomerFirstName { get; set; } = null!;
         public string CustomerLastName { get; set; } = null!;
         public string CustomerEmail { get; set; } = null!;
