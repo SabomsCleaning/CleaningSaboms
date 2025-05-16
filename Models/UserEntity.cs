@@ -1,0 +1,33 @@
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
+
+namespace CleaningSaboms.Models
+{
+    public class ApplicationUser : IdentityUser<Guid>
+    {
+        [Required]
+        [MaxLength(50)]
+        public string UserFirstName { get; set; } = null!;
+
+        [Required]
+        [MaxLength(50)]
+        public string UserLastName { get; set; } = null!;
+
+        [Required]
+        [MaxLength(20)]
+        public string UserPhone { get; set; } = null!;
+
+        public Guid RoleId { get; set; }
+
+        public ApplicationRole Role { get; set; } = null!;
+    }
+
+    public class ApplicationRole : IdentityRole<Guid>
+    {
+        [Required]
+        [MaxLength(30)]
+        public string RoleName { get; set; }
+
+        public ICollection<ApplicationUser> Users { get; set; } = new List<ApplicationUser>();
+    }
+}
