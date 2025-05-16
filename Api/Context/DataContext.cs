@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using CleaningSaboms.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 namespace CleaningSaboms.Context
 {
@@ -8,6 +10,8 @@ namespace CleaningSaboms.Context
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
+        public DbSet<CustomerEntity> Customers { get; set; } = null!;
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
