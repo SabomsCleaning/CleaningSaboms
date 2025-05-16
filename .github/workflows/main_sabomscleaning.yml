@@ -28,7 +28,7 @@ jobs:
         run: dotnet build CleaningSaboms.sln --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet test Tests/CleaningSaboms.Tests.csproj --no-build --verbosity normal
+        run: dotnet test CleaningSaboms.sln --no-build --verbosity normal
 
       - name: Install EF Core CLI tools
         run: dotnet tool install --global dotnet-ef
