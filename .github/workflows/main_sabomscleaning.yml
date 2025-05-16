@@ -43,6 +43,7 @@ jobs:
 
       - name: Apply EF Core migrations
         run: dotnet ef database update --no-build
+        working-directory: ./CleaningSaboms
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.DB_CONNECTION_STRING }}
 
