@@ -36,6 +36,9 @@ jobs:
       - name: Add EF tools to PATH
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
+      - name: Print working directory
+        run: pwd
+
       - name: Run EF Core migrations
         run: dotnet ef database update --no-build
         working-directory: Api
