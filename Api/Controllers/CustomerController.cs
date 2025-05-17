@@ -1,6 +1,8 @@
 ﻿using CleaningSaboms.Context;
 using CleaningSaboms.Dto;
+using CleaningSaboms.Interfaces;
 using CleaningSaboms.Models;
+using CleaningSaboms.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,12 +12,12 @@ namespace CleaningSaboms.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly ICustomerService _customerService;
         private readonly ILogger<CustomerController> _logger;
 
-        public CustomerController(DataContext context, ILogger<CustomerController> logger)
+        public CustomerController(ICustomerService customerService, ILogger<CustomerController> logger)
         {
-            _context = context;
+            _customerService = customerService;
             _logger = logger;
         }
 
@@ -32,19 +34,13 @@ namespace CleaningSaboms.Controllers
                     return BadRequest("Customer cannot be null.");
                 }
 
-                var entity = new CustomerEntity
+                var result = await _customerService.CreateCustomer(customer);
+                if (!result.Success)
                 {
-                    Id = Guid.NewGuid(),
-                    CustomerFirstName = customer.CustomerFirstName,
-                    CustomerLastName = customer.CustomerLastName,
-                    CustomerEmail = customer.CustomerEmail
-                };
-
-                _context.Customers.Add(entity);
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation("Kund skapad med ID: {Id}", entity.Id);
-                return CreatedAtAction(nameof(GetCustomer), new { id = entity.Id }, entity);
+                    _logger.LogWarning("Kund skapades inte: {ErrorMessage}", result.Message);
+                    return BadRequest(result.Message);
+                }
+                return CreatedAtAction(nameof(GetCustomer), new { id = result.Data!.Id }, result.Data);
             }
             catch (Exception ex)
             {
@@ -55,16 +51,16 @@ namespace CleaningSaboms.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task <IActionResult> GetCustomer(Guid id)
+        public async Task<IActionResult> GetCustomer(Guid id)
         {
             _logger.LogInformation("GetCustomer: Försöker hämta kund med ID {CustomerId}", id);
-            var customer = await _context.Customers.FindAsync(id);
+            var customer = await _customerService.GetCustomer(id);
             if (customer == null)
             {
                 _logger.LogWarning("GetCustomer: Kunde inte hitta kund med ID {CustomerId}", id);
                 return NotFound("Customer not found.");
             }
-            _logger.LogInformation("GetCustomer: Kund hittad: {CustomerEmail}", customer.CustomerEmail);
+            _logger.LogInformation("GetCustomer: Kund hittad: {CustomerEmail}", customer);
             return Ok(customer);
         }
     }
