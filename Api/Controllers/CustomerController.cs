@@ -22,25 +22,37 @@ namespace CleaningSaboms.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCustomer([FromBody] CustomerDto customer)
         {
-            if (customer == null)
-            {
-                _logger.LogWarning("Customer är null");
-                return BadRequest("Customer cannot be null.");
-            }
-            
-            var customerEntity = new CustomerEntity
-            {
-                Id = Guid.NewGuid(),
-                CustomerFirstName = customer.CustomerFirstName,
-                CustomerLastName = customer.CustomerLastName,
-                CustomerEmail = customer.CustomerEmail
-            };
+            _logger.LogInformation("Anrop mottaget i CreateCustomer");
 
-            _context.Customers.Add(customerEntity);
-            await _context.SaveChangesAsync();
-            _logger.LogInformation("CreateCustomer: Ny kund skapad med ID {CustomerId}", customerEntity.Id);
-            return CreatedAtAction(nameof(GetCustomer), new { id = customerEntity.Id }, customerEntity);
+            try
+            {
+                if (customer == null)
+                {
+                    _logger.LogWarning("Customer-objekt var null.");
+                    return BadRequest("Customer cannot be null.");
+                }
+
+                var entity = new CustomerEntity
+                {
+                    Id = Guid.NewGuid(),
+                    CustomerFirstName = customer.CustomerFirstName,
+                    CustomerLastName = customer.CustomerLastName,
+                    CustomerEmail = customer.CustomerEmail
+                };
+
+                _context.Customers.Add(entity);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Kund skapad med ID: {Id}", entity.Id);
+                return CreatedAtAction(nameof(GetCustomer), new { id = entity.Id }, entity);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Fel vid skapande av kund.");
+                return StatusCode(500, "Ett fel inträffade i API:t.");
+            }
         }
+
 
         [HttpGet("{id}")]
         public async Task <IActionResult> GetCustomer(Guid id)
