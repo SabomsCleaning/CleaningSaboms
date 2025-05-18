@@ -368,3 +368,8 @@ appsettings.Development.json
 # Ignore all .vs folders
 .vs/
 **/.vs/
+*.suo
+*.db
+bin/
+obj/
+*.backuo.json
