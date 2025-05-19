@@ -30,14 +30,16 @@ namespace CleaningSaboms.Repositories
         {
             return await _context.Customers.FindAsync(customerId);
         }
-        public Task<ServiceResult<IEnumerable<CustomerDto>>> GetAllCustomers()
+        public async Task<IEnumerable<CustomerEntity>> GetAllCustomers()
         {
-            throw new NotImplementedException();
+            return await _context.Customers
+                .Include(c => c.CustomerAddress)
+                .ToListAsync();
         }
 
         public async Task<bool> AddressExistsAsync(CustomerDto dto)
         {
-            return await _context.Customers.AnyAsync(c => 
+            return await _context.Customers.AnyAsync(c =>
                         c.CustomerAddress.CustomerAddressLine == dto.CustomerAddressLine &&
                         c.CustomerAddress.CustomerCity == dto.CustomerCity &&
                         c.CustomerAddress.CustomerPostalCode == dto.CustomerPostalCode);

@@ -29,5 +29,28 @@ namespace CleaningSaboms.Factory
                 CustomerAddressId = address.Id
             };
         }
+
+        public static CustomerDto ToDto(CustomerEntity customerEntity)
+        {
+            if (customerEntity == null)
+            {
+                throw new ArgumentNullException(nameof(customerEntity), "CustomerEntity cannot be null.");
+            }
+            return new CustomerDto
+            {
+                CustomerFirstName = customerEntity.CustomerFirstName,
+                CustomerLastName = customerEntity.CustomerLastName,
+                CustomerEmail = customerEntity.CustomerEmail,
+                CustomerAddressLine = customerEntity.CustomerAddress.CustomerAddressLine,
+                CustomerCity = customerEntity.CustomerAddress.CustomerCity,
+                CustomerPostalCode = customerEntity.CustomerAddress.CustomerPostalCode
+            };
+        }
+
+        public static IEnumerable<CustomerDto> ToDto(IEnumerable<CustomerEntity> customers)
+        {
+            return customers.Select(c => ToDto(c));
+        }
+
     }
 }

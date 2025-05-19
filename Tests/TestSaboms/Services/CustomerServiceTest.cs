@@ -100,5 +100,65 @@ namespace CleaningSaboms.Tests.Services
             Assert.Equal("Kund hittades.", result.Message);
             Assert.Equal(id, result.Data!.Id);
         }
+
+        [Fact]
+        public async Task GetAllCustomers_Should_Return_CustomerDtos_When_Customers_Exist()
+        {
+            // Arrange
+            var customers = new List<CustomerEntity>
+            {
+                new CustomerEntity
+                {
+                    Id = Guid.NewGuid(),
+                    CustomerFirstName = "Alice",
+                    CustomerLastName = "Andersson",
+                    CustomerEmail = "alice@example.com",
+                    CustomerAddress = new CustomerAddressEntity
+                    {
+                        CustomerAddressLine = "Storgatan 1",
+                        CustomerCity = "Stockholm",
+                        CustomerPostalCode = "12345"
+                    }
+                }
+            };
+
+            _customerRepoMock.Setup(r => r.GetAllCustomers()).ReturnsAsync(customers);
+
+            // Act
+            var result = await _service.GetAllCustomers();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Single(result);
+            Assert.Equal("Alice", result.First().CustomerFirstName);
+        }
+
+        [Fact]
+        public async Task GetAllCustomers_Should_Return_EmptyList_When_No_Customers()
+        {
+            // Arrange
+            _customerRepoMock.Setup(r => r.GetAllCustomers()).ReturnsAsync(new List<CustomerEntity>());
+
+            // Act
+            var result = await _service.GetAllCustomers();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task GetAllCustomers_Should_Return_EmptyList_When_Null()
+        {
+            // Arrange
+            _customerRepoMock.Setup(r => r.GetAllCustomers()).ReturnsAsync((IEnumerable<CustomerEntity>?)null);
+
+            // Act
+            var result = await _service.GetAllCustomers();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
     }
 }

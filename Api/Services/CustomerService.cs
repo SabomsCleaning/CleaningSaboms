@@ -27,6 +27,20 @@ namespace CleaningSaboms.Services
             return ServiceResult<CustomerEntity>.Ok(entity, "Skapad");
         }
 
+        public async Task<IEnumerable<CustomerDto>> GetAllCustomers()
+        {
+            var customerEntities = await _customerRepository.GetAllCustomers();
+
+            if (customerEntities == null || !customerEntities.Any())
+            {
+                return Enumerable.Empty<CustomerDto>();
+            }
+
+            var customerDtos = CustomerFactory.ToDto(customerEntities);
+            return customerDtos;
+        }
+
+
         public async Task<ServiceResult<CustomerEntity>> GetCustomer(Guid id)
         {
             var result = await _customerRepository.GetCustomerById(id);
