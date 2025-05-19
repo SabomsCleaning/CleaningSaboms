@@ -8,5 +8,6 @@ namespace CleaningSaboms.Interfaces
     {
         Task<ServiceResult<CustomerEntity>> CreateCustomer(CustomerDto customer);
         Task<ServiceResult<CustomerEntity>> GetCustomer(Guid id);
+        Task<IEnumerable<CustomerDto>> GetAllCustomers();
     }
 }

@@ -10,6 +10,8 @@ namespace CleaningSaboms.Interfaces
         Task<ServiceResult> UpdateCustomer(CustomerDto customer);
         Task<ServiceResult> DeleteCustomer(int customerId);
         Task<CustomerEntity> GetCustomerById(Guid customerId);
-        Task<ServiceResult<IEnumerable<CustomerDto>>> GetAllCustomers();
+        Task<IEnumerable<CustomerEntity>> GetAllCustomers();
+        Task <bool> AddressExistsAsync(CustomerDto dto);
+        Task <bool> CustomerExistsAsync(CustomerDto dto);
     }
 }

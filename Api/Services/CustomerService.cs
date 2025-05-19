@@ -12,10 +12,34 @@ namespace CleaningSaboms.Services
 
         public async Task<ServiceResult<CustomerEntity>> CreateCustomer(CustomerDto customer)
         {
-            var Entity = CustomerFactory.FromDto(customer);
-            var result = await _customerRepository.CreateCustomer(Entity);
-            return ServiceResult<CustomerEntity>.Ok(Entity, "Skapad");
+            var customerExist = await _customerRepository.CustomerExistsAsync(customer);
+            if (customerExist)
+            {
+                return ServiceResult<CustomerEntity>.Fail("Kunden finns redan i databasen");
+            }
+            var addressExist = await _customerRepository.AddressExistsAsync(customer);
+            if (addressExist)
+            {
+                return ServiceResult<CustomerEntity>.Fail("Kundens adress finns redan i databasen");
+            }
+            var entity = CustomerFactory.FromDto(customer);
+            _ = await _customerRepository.CreateCustomer(entity);
+            return ServiceResult<CustomerEntity>.Ok(entity, "Skapad");
         }
+
+        public async Task<IEnumerable<CustomerDto>> GetAllCustomers()
+        {
+            var customerEntities = await _customerRepository.GetAllCustomers();
+
+            if (customerEntities == null || !customerEntities.Any())
+            {
+                return Enumerable.Empty<CustomerDto>();
+            }
+
+            var customerDtos = CustomerFactory.ToDto(customerEntities);
+            return customerDtos;
+        }
+
 
         public async Task<ServiceResult<CustomerEntity>> GetCustomer(Guid id)
         {
