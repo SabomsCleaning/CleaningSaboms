@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TestSaboms")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ea49b7aa5214de25a13ca36fe1a6ace9e2a578dd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cd3c548db0dc2a4651db12dac54260ae6e816c42")]
 [assembly: System.Reflection.AssemblyProductAttribute("TestSaboms")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TestSaboms")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

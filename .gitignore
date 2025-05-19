@@ -372,4 +372,5 @@ appsettings.Development.json
 *.db
 bin/
 obj/
+*.cache
 *.backuo.json
