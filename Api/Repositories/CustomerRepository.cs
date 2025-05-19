@@ -3,6 +3,7 @@ using CleaningSaboms.Dto;
 using CleaningSaboms.Interfaces;
 using CleaningSaboms.Models;
 using CleaningSaboms.Results;
+using Microsoft.EntityFrameworkCore;
 
 namespace CleaningSaboms.Repositories
 {
@@ -34,6 +35,17 @@ namespace CleaningSaboms.Repositories
             throw new NotImplementedException();
         }
 
-        
+        public async Task<bool> AddressExistsAsync(CustomerDto dto)
+        {
+            return await _context.Customers.AnyAsync(c => 
+                        c.CustomerAddress.CustomerAddressLine == dto.CustomerAddressLine &&
+                        c.CustomerAddress.CustomerCity == dto.CustomerCity &&
+                        c.CustomerAddress.CustomerPostalCode == dto.CustomerPostalCode);
+        }
+
+        public async Task<bool> CustomerExistsAsync(CustomerDto dto)
+        {
+            return await _context.Customers.AnyAsync(c => c.CustomerEmail == dto.CustomerEmail);
+        }
     }
 }
