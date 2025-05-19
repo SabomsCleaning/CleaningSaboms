@@ -23,9 +23,6 @@
   <ItemGroup>
     <Folder Include="Database\" />
     <Folder Include="Migrations\" />
-    <Folder Include="Results\" />
-    <Folder Include="Repositories\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

@@ -1,3 +1,4 @@
+using CleaningSaboms.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services.AddDbContext<CleaningSaboms.Context.DataContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"),
         sqlOptions => sqlOptions.EnableRetryOnFailure())
     );
+builder.Services.AddServices();
 
 
 var app = builder.Build();
