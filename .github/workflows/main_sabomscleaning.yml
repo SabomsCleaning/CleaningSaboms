@@ -25,7 +25,7 @@ jobs:
         run: dotnet build ./Api/CleaningSaboms.csproj --configuration Release
 
       - name: Run tests
-        run: dotnet test ./Tests/TestSaboms/TestSaboms.csproj --no-build --verbosity normal
+        run: dotnet test ./Tests/TestSaboms/TestSaboms.csproj --verbosity normal
 
       - name: Publish app
         run: dotnet publish ./Api/CleaningSaboms.csproj -c Release -o ./myapp
