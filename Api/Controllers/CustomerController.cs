@@ -49,7 +49,6 @@ namespace CleaningSaboms.Controllers
             }
         }
 
-
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomer(Guid id)
         {
@@ -57,7 +56,6 @@ namespace CleaningSaboms.Controllers
             var customer = await _customerService.GetCustomer(id);
             if (customer == null)
             {
-                _logger.LogWarning("GetCustomer: Kunde inte hitta kund med ID {CustomerId}", id);
                 return NotFound("Customer not found.");
             }
             _logger.LogInformation("GetCustomer: Kund hittad: {CustomerEmail}", customer);

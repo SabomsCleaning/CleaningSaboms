@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CleaningSaboms.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250517124730_init")]
-    partial class init
+    [Migration("20250518121232_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
