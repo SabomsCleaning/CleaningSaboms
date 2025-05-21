@@ -26,10 +26,10 @@ namespace CleaningSaboms.Tests.Services
         {
             // Arrange
             var dto = new CustomerDto { CustomerFirstName = "Anna", CustomerLastName = "Karlsson", CustomerEmail = "anna@test.com" };
-            _customerRepoMock.Setup(r => r.CustomerExistsAsync(dto)).ReturnsAsync(true);
+            _customerRepoMock.Setup(r => r.CustomerExistsAsync(dto.CustomerEmail)).ReturnsAsync(true);
 
             // Act
-            var result = await _service.CreateCustomer(dto);
+            var result = await _service.CreateCustomerAsync(dto);
 
             // Assert
             Assert.False(result.Success);
@@ -41,11 +41,11 @@ namespace CleaningSaboms.Tests.Services
         {
             // Arrange
             var dto = new CustomerDto { CustomerFirstName = "Bo", CustomerLastName = "Svensson", CustomerEmail = "bo@test.com" };
-            _customerRepoMock.Setup(r => r.CustomerExistsAsync(dto)).ReturnsAsync(false);
+            _customerRepoMock.Setup(r => r.CustomerExistsAsync(dto.CustomerEmail)).ReturnsAsync(false);
             _customerRepoMock.Setup(r => r.AddressExistsAsync(dto)).ReturnsAsync(true);
 
             // Act
-            var result = await _service.CreateCustomer(dto);
+            var result = await _service.CreateCustomerAsync(dto);
 
             // Assert
             Assert.False(result.Success);
@@ -57,12 +57,12 @@ namespace CleaningSaboms.Tests.Services
         {
             // Arrange
             var dto = new CustomerDto { CustomerFirstName = "Cecilia", CustomerLastName = "Nilsson", CustomerEmail = "cecilia@test.com" };
-            _customerRepoMock.Setup(r => r.CustomerExistsAsync(dto)).ReturnsAsync(false);
+            _customerRepoMock.Setup(r => r.CustomerExistsAsync(dto.CustomerEmail)).ReturnsAsync(false);
             _customerRepoMock.Setup(r => r.AddressExistsAsync(dto)).ReturnsAsync(false);
             //_customerRepoMock.Setup(r => r.CreateCustomer(It.IsAny<CustomerEntity>())).ReturnsAsync(true);
 
             // Act
-            var result = await _service.CreateCustomer(dto);
+            var result = await _service.CreateCustomerAsync(dto);
 
             // Assert
             Assert.True(result.Success);
@@ -74,10 +74,10 @@ namespace CleaningSaboms.Tests.Services
         {
             // Arrange
             var id = Guid.NewGuid();
-            _customerRepoMock.Setup(r => r.GetCustomerById(id)).ReturnsAsync((CustomerEntity?)null);
+            _customerRepoMock.Setup(r => r.GetCustomerByIdAsync(id)).ReturnsAsync((CustomerEntity?)null);
 
             // Act
-            var result = await _service.GetCustomerById(id);
+            var result = await _service.GetCustomerByIdAsync(id);
 
             // Assert
             Assert.False(result.Success);
@@ -103,10 +103,10 @@ namespace CleaningSaboms.Tests.Services
                 }
             };
 
-            _customerRepoMock.Setup(r => r.GetCustomerById(id)).ReturnsAsync(entity);
+            _customerRepoMock.Setup(r => r.GetCustomerByIdAsync(id)).ReturnsAsync(entity);
 
             // Act
-            var result = await _service.GetCustomerById(id);
+            var result = await _service.GetCustomerByIdAsync(id);
 
             // Assert
             Assert.True(result.Success);
@@ -134,10 +134,10 @@ namespace CleaningSaboms.Tests.Services
                 }
             };
 
-            _customerRepoMock.Setup(r => r.GetAllCustomers()).ReturnsAsync(customers);
+            _customerRepoMock.Setup(r => r.GetAllCustomersAsync()).ReturnsAsync(customers);
 
             // Act
-            var result = await _service.GetAllCustomers();
+            var result = await _service.GetAllCustomersAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -149,10 +149,10 @@ namespace CleaningSaboms.Tests.Services
         public async Task GetAllCustomers_Should_Return_EmptyList_When_No_Customers()
         {
             // Arrange
-            _customerRepoMock.Setup(r => r.GetAllCustomers()).ReturnsAsync(new List<CustomerEntity>());
+            _customerRepoMock.Setup(r => r.GetAllCustomersAsync()).ReturnsAsync(new List<CustomerEntity>());
 
             // Act
-            var result = await _service.GetAllCustomers();
+            var result = await _service.GetAllCustomersAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -163,14 +163,40 @@ namespace CleaningSaboms.Tests.Services
         public async Task GetAllCustomers_Should_Return_EmptyList_When_Null()
         {
             // Arrange
-            _customerRepoMock.Setup(r => r.GetAllCustomers()).ReturnsAsync((IEnumerable<CustomerEntity>?)null);
+            _customerRepoMock.Setup(r => r.GetAllCustomersAsync()).ReturnsAsync((IEnumerable<CustomerEntity>?)null);
 
             // Act
-            var result = await _service.GetAllCustomers();
+            var result = await _service.GetAllCustomersAsync();
 
             // Assert
             Assert.NotNull(result);
             Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task DeleteCustomerAsync_Should_Fail_If_Not_Found()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            _customerRepoMock.Setup(r => r.DeleteCustomerAsync(id)).ReturnsAsync(false);
+            // Act
+            var result = await _service.DeleteCustomerAsync(id);
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("Kund hittades inte.", result.Message);
+        }
+
+        [Fact]
+        public async Task DeleteCustomerAsync_Should_Succeed_If_Found()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            _customerRepoMock.Setup(r => r.DeleteCustomerAsync(id)).ReturnsAsync(true);
+            // Act
+            var result = await _service.DeleteCustomerAsync(id);
+            // Assert
+            Assert.True(result.Success);
+            Assert.Equal("Kund borttagen.", result.Message);
         }
     }
 }

@@ -1,11 +1,7 @@
-﻿using CleaningSaboms.Context;
-using CleaningSaboms.Dto;
+﻿using CleaningSaboms.Dto;
 using CleaningSaboms.Factory;
 using CleaningSaboms.Interfaces;
-using CleaningSaboms.Models;
 using CleaningSaboms.Results;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleaningSaboms.Controllers
@@ -36,7 +32,7 @@ namespace CleaningSaboms.Controllers
                     return BadRequest("Customer cannot be null.");
                 }
 
-                var result = await _customerService.CreateCustomer(customer);
+                var result = await _customerService.CreateCustomerAsync(customer);
                 if (!result.Success)
                 {
                     _logger.LogWarning("Kund skapades inte: {ErrorMessage}", result.Message);
@@ -57,7 +53,7 @@ namespace CleaningSaboms.Controllers
         public async Task<IActionResult> GetCustomer(Guid id)
         {
             _logger.LogInformation("GetCustomer: Försöker hämta kund med ID {CustomerId}", id);
-            var result = await _customerService.GetCustomerById(id);
+            var result = await _customerService.GetCustomerByIdAsync(id);
             if (result == null || !result.Success)
             {
                 return NotFound("Customer not found.");
@@ -70,13 +66,51 @@ namespace CleaningSaboms.Controllers
         public async Task<IActionResult> GetAllCustomers()
         {
             _logger.LogInformation("GetAllCustomers: Försöker hämta alla kunder.");
-            var customers = await _customerService.GetAllCustomers();
+            var customers = await _customerService.GetAllCustomersAsync();
             if (customers == null || !customers.Any())
             {
                 return NotFound("No customers found.");
             }
             _logger.LogInformation("GetAllCustomers: {CustomerCount} kunder hittades.", customers.Count());
             return Ok(customers);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCustomer(Guid id, [FromBody] CustomerDto customer)
+        {
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+            _logger.LogInformation("UpdateCustomer: Försöker uppdatera kund med ID {CustomerId}", id);
+            var result = await _customerService.UpdateCustomerAsync(id, customer);
+
+            if (!result.Success)
+            {
+                return result.Type switch
+                {
+                    ErrorType.Conflict => BadRequest(result.Message),
+                    ErrorType.NotFound => NotFound(result.Message),
+                    ErrorType.Validation => UnprocessableEntity(result.Message),
+                    _ => StatusCode(500, "Ett fel inträffade i API:t.")
+                };
+            }
+
+            _logger.LogInformation("UpdateCustomer: Kund uppdaterad: {CustomerEmail}", result.Data.CustomerEmail);
+            return Ok(result.Data);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCustomer(Guid id)
+        {
+            _logger.LogInformation("DeleteCustomer: Försöker ta bort kund med ID {CustomerId}", id);
+            var result = await _customerService.DeleteCustomerAsync(id);
+            if (result == null || !result.Success)
+            {
+                return NotFound("Customer not found.");
+            }
+            _logger.LogInformation("DeleteCustomer: Kund borttagen");
+            return Ok(result.Data);
         }
     }
 }

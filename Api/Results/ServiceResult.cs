@@ -4,7 +4,9 @@
     {
         public bool Success { get; set; }
         public string? Message { get; set; }
-        
+
+        public ErrorType? Type { get; set; }
+
         public static ServiceResult Ok(string? message = null)
         {
             return new ServiceResult
@@ -14,12 +16,13 @@
             };
         }
 
-        public static ServiceResult Fail(string message)
+        public static ServiceResult Fail(string message, ErrorType errorType = ErrorType.UnexpectedError)
         {
             return new ServiceResult
             {
                 Success = false,
-                Message = message
+                Message = message,
+                Type = errorType
             };
         }
     }
@@ -36,12 +39,13 @@
                 Data = data
             };
         }
-        public static new ServiceResult<T> Fail(string message)
+        public static new ServiceResult<T> Fail(string message, ErrorType errorType = ErrorType.UnexpectedError)
         {
             return new ServiceResult<T>
             {
                 Success = false,
-                Message = message
+                Message = message,
+                Type = errorType
             };
         }
     }

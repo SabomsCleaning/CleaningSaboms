@@ -6,12 +6,12 @@ namespace CleaningSaboms.Interfaces
 {
     public interface ICustomerRepository
     {
-        Task<ServiceResult> CreateCustomer(CustomerEntity customer);
-        Task<ServiceResult> UpdateCustomer(CustomerDto customer);
-        Task<ServiceResult> DeleteCustomer(int customerId);
-        Task<CustomerEntity> GetCustomerById(Guid customerId);
-        Task<IEnumerable<CustomerEntity>> GetAllCustomers();
-        Task <bool> AddressExistsAsync(CustomerDto dto);
-        Task <bool> CustomerExistsAsync(CustomerDto dto);
+        Task<ServiceResult> CreateCustomerAsync(CustomerEntity customer);
+        Task UpdateCustomerAsync(CustomerEntity customer);
+        Task<bool> DeleteCustomerAsync(Guid Id);
+        Task<CustomerEntity> GetCustomerByIdAsync(Guid customerId);
+        Task<IEnumerable<CustomerEntity>> GetAllCustomersAsync();
+        Task<bool> AddressExistsAsync(CustomerDto dto);
+        Task<bool> CustomerExistsAsync(string email);
     }
 }

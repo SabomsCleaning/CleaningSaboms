@@ -58,7 +58,7 @@ namespace CleaningSaboms.Tests.Controllers
             };
 
             _customerServiceMock
-                .Setup(s => s.CreateCustomer(It.IsAny<CustomerDto>()))
+                .Setup(s => s.CreateCustomerAsync(It.IsAny<CustomerDto>()))
                 .ReturnsAsync(ServiceResult<CustomerEntity>.Ok(entity, "Skapad"));
 
             // Act
@@ -78,7 +78,7 @@ namespace CleaningSaboms.Tests.Controllers
         {
             var dto = new CustomerDto();
 
-            _customerServiceMock.Setup(s => s.CreateCustomer(dto))
+            _customerServiceMock.Setup(s => s.CreateCustomerAsync(dto))
                 .ReturnsAsync(ServiceResult<CustomerEntity>.Fail("Dublett"));
 
             var result = await _controller.CreateCustomer(dto);
@@ -111,7 +111,7 @@ namespace CleaningSaboms.Tests.Controllers
             };
 
             _customerServiceMock
-                .Setup(s => s.GetCustomerById(id))
+                .Setup(s => s.GetCustomerByIdAsync(id))
                 .ReturnsAsync(ServiceResult<CustomerDto>.Ok(dto, "Kund hittades."));
 
             var result = await _controller.GetCustomer(id);
@@ -128,7 +128,7 @@ namespace CleaningSaboms.Tests.Controllers
         {
             var id = Guid.NewGuid();
 
-            _customerServiceMock.Setup(s => s.GetCustomerById(id))
+            _customerServiceMock.Setup(s => s.GetCustomerByIdAsync(id))
                 .ReturnsAsync(ServiceResult<CustomerDto>.Fail("Kund saknas"));
 
             var result = await _controller.GetCustomer(id);
@@ -150,7 +150,7 @@ namespace CleaningSaboms.Tests.Controllers
                 }
             };
 
-            _customerServiceMock.Setup(s => s.GetAllCustomers())
+            _customerServiceMock.Setup(s => s.GetAllCustomersAsync())
                 .ReturnsAsync(list);
 
             var result = await _controller.GetAllCustomers();
@@ -163,13 +163,41 @@ namespace CleaningSaboms.Tests.Controllers
         [Fact]
         public async Task GetAllCustomers_Returns_NotFound_When_Empty()
         {
-            _customerServiceMock.Setup(s => s.GetAllCustomers())
+            _customerServiceMock.Setup(s => s.GetAllCustomersAsync())
                 .ReturnsAsync(new List<CustomerDto>());
 
             var result = await _controller.GetAllCustomers();
 
             var notFound = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal("No customers found.", notFound.Value);
+        }
+
+        [Fact]
+        public async Task DeleteCustomer_Returns_True_When_Success()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            _customerServiceMock.Setup(s => s.DeleteCustomerAsync(id))
+                .ReturnsAsync(ServiceResult<bool>.Ok(true, "Kund borttagen."));
+            // Assert
+            var result = await _controller.DeleteCustomer(id);
+            // Act
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.True((bool)okResult.Value!);
+        }
+
+        [Fact]
+        public async Task DeleteCustomer_Returns_False_When_Failure()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            _customerServiceMock.Setup(s => s.DeleteCustomerAsync(id))
+                .ReturnsAsync(ServiceResult<bool>.Fail("Customer not found."));
+            // Act
+            var result = await _controller.DeleteCustomer(id);
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal("Customer not found.", notFoundResult.Value);
         }
     }
 }

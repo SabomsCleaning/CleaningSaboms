@@ -6,8 +6,10 @@ namespace CleaningSaboms.Interfaces
 {
     public interface ICustomerService
     {
-        Task<ServiceResult<CustomerEntity>> CreateCustomer(CustomerDto customer);
-        Task<ServiceResult<CustomerDto>> GetCustomerById(Guid id);
-        Task<IEnumerable<CustomerDto>> GetAllCustomers();
+        Task<ServiceResult<CustomerEntity>> CreateCustomerAsync(CustomerDto customer);
+        Task<ServiceResult<CustomerDto>> GetCustomerByIdAsync(Guid id);
+        Task<IEnumerable<CustomerDto>> GetAllCustomersAsync();
+        Task <ServiceResult<CustomerDto>> UpdateCustomerAsync(Guid id, CustomerDto customer);
+        Task<ServiceResult<bool>> DeleteCustomerAsync(Guid id);
     }
 }
