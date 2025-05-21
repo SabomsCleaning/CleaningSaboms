@@ -41,14 +41,15 @@ namespace CleaningSaboms.Services
         }
 
 
-        public async Task<ServiceResult<CustomerEntity>> GetCustomer(Guid id)
+        public async Task<ServiceResult<CustomerDto>> GetCustomerById(Guid id)
         {
             var result = await _customerRepository.GetCustomerById(id);
             if (result == null)
             {
-                return ServiceResult<CustomerEntity>.Fail("Kund hittades inte.");
+                return ServiceResult<CustomerDto>.Fail("Kund hittades inte.");
             }
-            return ServiceResult<CustomerEntity>.Ok(result, "Kund hittades.");
+            var customerDto = CustomerFactory.ToDto(result);
+            return ServiceResult<CustomerDto>.Ok(customerDto, "Kund hittades.");
         }
     }
 }

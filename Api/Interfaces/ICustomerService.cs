@@ -7,7 +7,7 @@ namespace CleaningSaboms.Interfaces
     public interface ICustomerService
     {
         Task<ServiceResult<CustomerEntity>> CreateCustomer(CustomerDto customer);
-        Task<ServiceResult<CustomerEntity>> GetCustomer(Guid id);
+        Task<ServiceResult<CustomerDto>> GetCustomerById(Guid id);
         Task<IEnumerable<CustomerDto>> GetAllCustomers();
     }
 }

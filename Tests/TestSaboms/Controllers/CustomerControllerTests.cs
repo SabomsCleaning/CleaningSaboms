@@ -100,26 +100,36 @@ namespace CleaningSaboms.Tests.Controllers
         public async Task GetCustomer_Returns_Ok_When_Found()
         {
             var id = Guid.NewGuid();
-            var entity = new CustomerEntity { Id = id, CustomerEmail = "test@test.com" };
+            var dto = new CustomerDto
+            {
+                CustomerFirstName = "Anna",
+                CustomerLastName = "Svensson",
+                CustomerEmail = "test@test.com",
+                CustomerAddressLine = "Gatan 1",
+                CustomerCity = "Stockholm",
+                CustomerPostalCode = "12345"
+            };
 
-            _customerServiceMock.Setup(s => s.GetCustomer(id))
-                .ReturnsAsync(ServiceResult<CustomerEntity>.Ok(entity, "Hittad"));
+            _customerServiceMock
+                .Setup(s => s.GetCustomerById(id))
+                .ReturnsAsync(ServiceResult<CustomerDto>.Ok(dto, "Kund hittades."));
 
             var result = await _controller.GetCustomer(id);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<ServiceResult<CustomerEntity>>(okResult.Value);
-            Assert.True(returnValue.Success);
-            Assert.Equal("Hittad", returnValue.Message);
+            var returnValue = Assert.IsType<CustomerDto>(okResult.Value);
+
+            Assert.Equal("test@test.com", returnValue.CustomerEmail);
         }
+
 
         [Fact]
         public async Task GetCustomer_Returns_NotFound_When_Null()
         {
             var id = Guid.NewGuid();
 
-            _customerServiceMock.Setup(s => s.GetCustomer(id))
-                .ReturnsAsync(ServiceResult<CustomerEntity>.Fail("Kund saknas"));
+            _customerServiceMock.Setup(s => s.GetCustomerById(id))
+                .ReturnsAsync(ServiceResult<CustomerDto>.Fail("Kund saknas"));
 
             var result = await _controller.GetCustomer(id);
 
