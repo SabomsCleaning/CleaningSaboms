@@ -11,28 +11,41 @@ namespace CleaningSaboms.Repositories
     {
         private readonly DataContext _context = context;
 
-        public async Task<ServiceResult> CreateCustomer(CustomerEntity customer)
+        public async Task<ServiceResult> CreateCustomerAsync(CustomerEntity customer)
         {
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
             return new ServiceResult { Success = true, Message = "Customer created successfully." };
         }
 
-        public Task<ServiceResult> UpdateCustomer(CustomerDto customer)
+        public async Task UpdateCustomerAsync(CustomerEntity customer)
         {
-            throw new NotImplementedException();
+            _context.Customers.Update(customer);
+            await _context.SaveChangesAsync();
         }
-        public Task<ServiceResult> DeleteCustomer(int customerId)
+
+        public async Task<bool> DeleteCustomerAsync(Guid Id)
         {
-            throw new NotImplementedException();
+            var customer = await _context.Customers
+                .Include(c => c.CustomerAddress)
+                .FirstOrDefaultAsync(c => c.Id == Id);
+
+            if (customer == null)
+            {
+                return false;
+            }
+            _context.Customers.Remove(customer);
+            await _context.SaveChangesAsync();
+            return true;
         }
-        public async Task<CustomerEntity> GetCustomerById(Guid customerId)
+
+        public async Task<CustomerEntity> GetCustomerByIdAsync(Guid customerId)
         {
             return await _context.Customers
                 .Include(c => c.CustomerAddress)
                 .FirstOrDefaultAsync(c => c.Id == customerId);
         }
-        public async Task<IEnumerable<CustomerEntity>> GetAllCustomers()
+        public async Task<IEnumerable<CustomerEntity>> GetAllCustomersAsync()
         {
             return await _context.Customers
                 .Include(c => c.CustomerAddress)
@@ -47,9 +60,9 @@ namespace CleaningSaboms.Repositories
                         c.CustomerAddress.CustomerPostalCode == dto.CustomerPostalCode);
         }
 
-        public async Task<bool> CustomerExistsAsync(CustomerDto dto)
+        public async Task<bool> CustomerExistsAsync(string email)
         {
-            return await _context.Customers.AnyAsync(c => c.CustomerEmail == dto.CustomerEmail);
+            return await _context.Customers.AnyAsync(c => c.CustomerEmail == email);
         }
     }
 }
