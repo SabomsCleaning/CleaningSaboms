@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CleaningSaboms.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -27,17 +27,17 @@ namespace CleaningSaboms.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Customers",
+                name: "CustomerAddresses",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CustomerFirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CustomerLastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CustomerEmail = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    CustomerAddressLine = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CustomerCity = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CustomerPostalCode = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Customers", x => x.Id);
+                    table.PrimaryKey("PK_CustomerAddresses", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -93,6 +93,27 @@ namespace CleaningSaboms.Migrations
                         column: x => x.ApplicationRoleId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Customers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CustomerFirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerLastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerAddressId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Customers_CustomerAddresses_CustomerAddressId",
+                        column: x => x.CustomerAddressId,
+                        principalTable: "CustomerAddresses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -223,6 +244,11 @@ namespace CleaningSaboms.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customers_CustomerAddressId",
+                table: "Customers",
+                column: "CustomerAddressId");
         }
 
         /// <inheritdoc />
@@ -248,6 +274,9 @@ namespace CleaningSaboms.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "CustomerAddresses");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
