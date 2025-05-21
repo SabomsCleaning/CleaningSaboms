@@ -1,9 +1,11 @@
 ﻿using CleaningSaboms.Context;
 using CleaningSaboms.Dto;
+using CleaningSaboms.Factory;
 using CleaningSaboms.Interfaces;
 using CleaningSaboms.Models;
 using CleaningSaboms.Results;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleaningSaboms.Controllers
@@ -40,7 +42,9 @@ namespace CleaningSaboms.Controllers
                     _logger.LogWarning("Kund skapades inte: {ErrorMessage}", result.Message);
                     return BadRequest(result.Message);
                 }
-                return CreatedAtAction(nameof(GetCustomer), new { id = result.Data!.Id }, result.Data);
+                var dto = CustomerFactory.ToDto(result.Data!);
+                return Ok(dto);
+
             }
             catch (Exception ex)
             {

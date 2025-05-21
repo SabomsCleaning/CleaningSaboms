@@ -28,7 +28,7 @@ namespace CleaningSaboms.Tests.Controllers
         }
 
         [Fact]
-        public async Task CreateCustomer_Returns_CreatedAtAction_When_Success()
+        public async Task CreateCustomer_Returns_Ok_When_Success()
         {
             // Arrange
             var dto = new CustomerDto
@@ -41,19 +41,37 @@ namespace CleaningSaboms.Tests.Controllers
                 CustomerPostalCode = "12345"
             };
 
-            var entity = new CustomerEntity { Id = Guid.NewGuid(), CustomerFirstName = dto.CustomerFirstName };
+            var adress = new CustomerAddressEntity
+            {
+                CustomerAddressLine = dto.CustomerAddressLine,
+                CustomerCity = dto.CustomerCity,
+                CustomerPostalCode = dto.CustomerPostalCode
+            };
 
-            _customerServiceMock.Setup(s => s.CreateCustomer(dto))
+            var entity = new CustomerEntity
+            {
+                Id = Guid.NewGuid(),
+                CustomerFirstName = dto.CustomerFirstName,
+                CustomerLastName = dto.CustomerLastName,
+                CustomerEmail = dto.CustomerEmail,
+                CustomerAddress = adress
+            };
+
+            _customerServiceMock
+                .Setup(s => s.CreateCustomer(It.IsAny<CustomerDto>()))
                 .ReturnsAsync(ServiceResult<CustomerEntity>.Ok(entity, "Skapad"));
 
             // Act
             var result = await _controller.CreateCustomer(dto);
 
             // Assert
-            var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var returnValue = Assert.IsType<CustomerEntity>(createdResult.Value);
-            Assert.Equal(entity.Id, returnValue.Id);
+            var okResult = Assert.IsType<OkObjectResult>(result); // ✅ kontrollera att det är 200 OK
+            var returnValue = Assert.IsType<CustomerDto>(okResult.Value); // ✅ kontrollera typ
+
+            // Exempel på valfri detaljkontroll
+            Assert.Equal(dto.CustomerFirstName, returnValue.CustomerFirstName);
         }
+
 
         [Fact]
         public async Task CreateCustomer_Returns_BadRequest_When_Service_Fails()

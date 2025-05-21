@@ -25,8 +25,7 @@ namespace CleaningSaboms.Factory
                 CustomerFirstName = customerDto.CustomerFirstName,
                 CustomerLastName = customerDto.CustomerLastName,
                 CustomerEmail = customerDto.CustomerEmail,
-                CustomerAddress = address,
-                CustomerAddressId = address.Id
+                CustomerAddress = address
             };
         }
 

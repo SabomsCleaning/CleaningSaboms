@@ -23,9 +23,9 @@ namespace CleaningSaboms.Context
 
             builder.Entity<CustomerEntity>()
                 .HasOne(c => c.CustomerAddress)
-                .WithOne()
-                .HasForeignKey<CustomerAddressEntity>(c => c.CustomerId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .WithMany (a => a.Customers)
+                .HasForeignKey(c => c.CustomerAddressId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
