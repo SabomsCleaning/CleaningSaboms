@@ -57,13 +57,13 @@ namespace CleaningSaboms.Controllers
         public async Task<IActionResult> GetCustomer(Guid id)
         {
             _logger.LogInformation("GetCustomer: Försöker hämta kund med ID {CustomerId}", id);
-            var result = await _customerService.GetCustomer(id);
+            var result = await _customerService.GetCustomerById(id);
             if (result == null || !result.Success)
             {
                 return NotFound("Customer not found.");
             }
             _logger.LogInformation("GetCustomer: Kund hittad: {CustomerEmail}", result);
-            return Ok(result);
+            return Ok(result.Data);
         }
 
         [HttpGet]

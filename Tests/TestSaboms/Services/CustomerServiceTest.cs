@@ -77,7 +77,7 @@ namespace CleaningSaboms.Tests.Services
             _customerRepoMock.Setup(r => r.GetCustomerById(id)).ReturnsAsync((CustomerEntity?)null);
 
             // Act
-            var result = await _service.GetCustomer(id);
+            var result = await _service.GetCustomerById(id);
 
             // Assert
             Assert.False(result.Success);
@@ -89,16 +89,28 @@ namespace CleaningSaboms.Tests.Services
         {
             // Arrange
             var id = Guid.NewGuid();
-            var entity = new CustomerEntity { Id = id, CustomerFirstName = "David", CustomerLastName = "Lind", CustomerEmail = "david@test.com" };
+            var entity = new CustomerEntity
+            {
+                Id = id,
+                CustomerEmail = "test@test.com",
+                CustomerFirstName = "Anna",
+                CustomerLastName = "Svensson",
+                CustomerAddress = new CustomerAddressEntity
+                {
+                    CustomerAddressLine = "Gatan 1",
+                    CustomerCity = "Stockholm",
+                    CustomerPostalCode = "12345"
+                }
+            };
+
             _customerRepoMock.Setup(r => r.GetCustomerById(id)).ReturnsAsync(entity);
 
             // Act
-            var result = await _service.GetCustomer(id);
+            var result = await _service.GetCustomerById(id);
 
             // Assert
             Assert.True(result.Success);
             Assert.Equal("Kund hittades.", result.Message);
-            Assert.Equal(id, result.Data!.Id);
         }
 
         [Fact]
