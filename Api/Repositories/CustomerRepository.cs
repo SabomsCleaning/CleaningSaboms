@@ -28,7 +28,9 @@ namespace CleaningSaboms.Repositories
         }
         public async Task<CustomerEntity> GetCustomerById(Guid customerId)
         {
-            return await _context.Customers.FindAsync(customerId);
+            return await _context.Customers
+                .Include(c => c.CustomerAddress)
+                .FirstOrDefaultAsync(c => c.Id == customerId);
         }
         public async Task<IEnumerable<CustomerEntity>> GetAllCustomers()
         {

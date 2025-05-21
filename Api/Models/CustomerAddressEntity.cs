@@ -20,6 +20,6 @@ namespace CleaningSaboms.Models
         public string CustomerPostalCode { get; set; } = null!;
 
         [Required]
-        public Guid CustomerId { get; set; }
+        public ICollection<CustomerEntity> Customers { get; set; } = new List<CustomerEntity>();
     }
 }
