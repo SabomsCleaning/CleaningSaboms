@@ -1,4 +1,7 @@
+using CleaningSaboms.Models;
+using CleaningSaboms.Seed;
 using CleaningSaboms.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,8 +18,21 @@ builder.Services.AddDbContext<CleaningSaboms.Context.DataContext>(options =>
     );
 builder.Services.AddServices();
 
+//builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+//{
+//    options.Password.RequiredLength = 6;
+//    options.Password.RequireDigit = true;
+//    options.User.RequireUniqueEmail = true;
+//})
+//.AddEntityFrameworkStores<CleaningSaboms.Context.DataContext>()
+//.AddDefaultTokenProviders();
 
 var app = builder.Build();
+//using (var scope = app.Services.CreateScope())
+//{
+//    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+//    await RoleSeed.SeedRolesAsync(roleManager);
+//}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
