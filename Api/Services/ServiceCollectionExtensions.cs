@@ -9,6 +9,8 @@ namespace CleaningSaboms.Services
         {
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
             return services;
         }
     }

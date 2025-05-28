@@ -5,14 +5,20 @@ namespace CleaningSaboms.Seed
 {
     public static class RoleSeed
     {
-        public static async Task SeedRolesAsync(RoleManager<ApplicationRole> roleManager)
+        public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
         {
-            string[] roleNames = { "Admin", "User", "Developer", "ScheduleLayer" };
-            foreach (var role in roleNames)
+            string[] roleName = { "Admin", "User", "Developer", "ScheduleLayer", "Customer" };
+            foreach (var role in roleName)
             {
                 if (!await roleManager.RoleExistsAsync(role))
                 {
-                    await roleManager.CreateAsync(new ApplicationRole { RoleName = role});
+                    var identityRole = new IdentityRole
+                    {
+                        Name = role,
+                        NormalizedName = role.ToUpper(),
+                    };
+
+                    await roleManager.CreateAsync(identityRole);
                 }
             }
         }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CleaningSaboms.Models
 {
-    public class ApplicationUser : IdentityUser<Guid>
+    public class ApplicationUser : IdentityUser
     {
         [Required]
         [MaxLength(50)]
@@ -16,5 +16,7 @@ namespace CleaningSaboms.Models
         [Required]
         [MaxLength(20)]
         public string UserPhone { get; set; } = null!;
+
+
     }
 }

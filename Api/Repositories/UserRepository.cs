@@ -8,15 +8,16 @@ namespace CleaningSaboms.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<ApplicationRole> _roleManager;
-        public UserRepository(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public UserRepository(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
         }
-        public Task CreateUserAsync(ApplicationUser user, string password)
+        public async Task<(IdentityResult Result, ApplicationUser User)> CreateUserAsync(ApplicationUser user, string password)
         {
-            throw new NotImplementedException();
+            var result = await _userManager.CreateAsync(user, password);
+            return (result, user);
         }
         public Task UpdateUserAsync(ApplicationUser user)
         {
@@ -30,9 +31,9 @@ namespace CleaningSaboms.Repositories
         {
             throw new NotImplementedException();
         }
-        public Task<ApplicationUser?> GetUserByEmailAsync(string email)
+        public async Task<ApplicationUser?> GetUserByEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            return await _userManager.FindByEmailAsync(email); 
         }
         public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync()
         {
@@ -42,15 +43,34 @@ namespace CleaningSaboms.Repositories
         {
             throw new NotImplementedException();
         }
-        public Task<IList<string>> GetUserRolesAsync(Guid userId)
+        public async Task<IList<string>> GetUserRolesAsync(Guid userId)
         {
             throw new NotImplementedException();
         }
-        public Task AddUserToRoleAsync(Guid userId, string roleName)
+        public async Task<bool> AddUserToRoleAsync(string userId, string roleName)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return false;
+
+            var roleExists = await _roleManager.RoleExistsAsync(roleName);
+            if (!roleExists)
+                return false;
+
+            var result = await _userManager.AddToRoleAsync(user, roleName);
+            return result.Succeeded;
+        }
+
+        public async Task<IList<string>> GetRolesByIdAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return new List<string>();
+
+            var role = await _userManager.GetRolesAsync(user);
+            return role;
         }
     }
-    
+
 }
 
