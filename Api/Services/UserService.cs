@@ -47,9 +47,15 @@ namespace CleaningSaboms.Services
             return ServiceResult<UserDto>.Ok(userDto, "Användaren är skapad");
         }
 
-        public Task<bool> DeleteUserAsync(Guid id)
+        //TODO: Denna skall vara en serviceResult
+        //TODO: skall vara email
+        public async Task<bool> DeleteUserAsync(string id)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetUserByEmailAsync(id);
+            if (user == null) {  return false; }
+
+            return await _userRepository.DeleteUserAsync(user);
+
         }
 
         public async Task<IEnumerable<UserDto>> GetAllUsersAsync()

@@ -7,8 +7,7 @@ namespace CleaningSaboms.Interfaces
     {
         Task<(IdentityResult Result, ApplicationUser User)> CreateUserAsync(ApplicationUser user, string password);
         Task UpdateUserAsync(ApplicationUser user);
-        Task<bool> DeleteUserAsync(Guid id);
-        Task<ApplicationUser?> GetUserByIdAsync(Guid userId);
+        Task<bool> DeleteUserAsync(ApplicationUser user);
         Task<ApplicationUser> GetUserByEmailAsync(string email);
         Task<IEnumerable<ApplicationUser>> GetAllUsersAsync();
         Task<bool> UserExistsAsync(string email);

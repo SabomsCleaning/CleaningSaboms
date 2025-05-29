@@ -23,13 +23,14 @@ namespace CleaningSaboms.Repositories
         {
             throw new NotImplementedException();
         }
-        public Task<bool> DeleteUserAsync(Guid id)
+        public async Task<bool> DeleteUserAsync(ApplicationUser user)
         {
-            throw new NotImplementedException();
+            var result = await _userManager.DeleteAsync(user);
+            return result.Succeeded;
         }
-        public Task<ApplicationUser?> GetUserByIdAsync(Guid userId)
+        public async Task<ApplicationUser?> GetUserByIdAsync(string userId)
         {
-            throw new NotImplementedException();
+           return await _userManager.FindByIdAsync(userId);
         }
         public async Task<ApplicationUser?> GetUserByEmailAsync(string email)
         {
@@ -39,9 +40,14 @@ namespace CleaningSaboms.Repositories
         {
             return await _userManager.Users.ToListAsync();
         }
-        public Task<bool> UserExistsAsync(string email)
+        public async Task<bool> UserExistsAsync(string email)
         {
-            throw new NotImplementedException();
+            var result = await _userManager.FindByEmailAsync(email);
+            if (result == null)
+            {
+                return false;
+            }
+            return true;
         }
         public async Task<IList<string>> GetUserRolesAsync(Guid userId)
         {
@@ -69,6 +75,11 @@ namespace CleaningSaboms.Repositories
 
             var role = await _userManager.GetRolesAsync(user);
             return role;
+        }
+
+        public Task<bool> DeleteUserAsync(string email)
+        {
+            throw new NotImplementedException();
         }
     }
 

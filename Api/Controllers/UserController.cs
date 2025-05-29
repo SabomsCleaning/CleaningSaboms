@@ -44,6 +44,15 @@ namespace CleaningSaboms.Controllers
                 return NotFound();
             return Ok(result);
         }
+
+        [HttpDelete("{email}")]
+        public async Task<IActionResult> DeleteUser(string email)
+        {
+            var result = await _userService.DeleteUserAsync(email);
+            if (result)
+                return Ok(result);
+            return BadRequest(result);
+        }
     }
 
 }

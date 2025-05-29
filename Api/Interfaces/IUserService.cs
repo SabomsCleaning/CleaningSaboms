@@ -8,7 +8,7 @@ namespace CleaningSaboms.Interfaces
     {
         Task <ServiceResult<UserDto>>CreateUserAsync(RegisterUserDto dto);
         Task <ServiceResult<UserDto>>UpdateUserAsync(ApplicationUser user);
-        Task<bool> DeleteUserAsync(Guid id);
+        Task<bool> DeleteUserAsync(string id);
         Task<ServiceResult<ApplicationUser?>> GetUserByIdAsync(Guid userId);
         Task<ServiceResult<UserDto>> GetUserByEmailAsync(string email);
         Task<IEnumerable<UserDto>> GetAllUsersAsync();
