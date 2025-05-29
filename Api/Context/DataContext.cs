@@ -13,6 +13,7 @@ namespace CleaningSaboms.Context
         }
         public DbSet<CustomerEntity> Customers { get; set; } = null!;
         public DbSet<CustomerAddressEntity> CustomerAddresses { get; set; } = null!;
+        public DbSet<AuditLogger> AuditLogs { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

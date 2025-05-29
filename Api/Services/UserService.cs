@@ -6,9 +6,10 @@ using CleaningSaboms.Results;
 
 namespace CleaningSaboms.Services
 {
-    public class UserService(IUserRepository userRepository) : IUserService
+    public class UserService(IUserRepository userRepository, IAuditLogger auditLogger) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
+        private readonly IAuditLogger _auditLogger = auditLogger;
 
         public Task AddUserToRoleAsync(Guid userId, string roleName)
         {
@@ -37,25 +38,70 @@ namespace CleaningSaboms.Services
 
             if (!result.Succeeded)
             {
+                await _auditLogger.LogAsync(
+                    action: "CreateUserFailed",
+                    //TODO: Denna skall ändras när inlogg är på plats
+                    performedBy: "[System/Admin]",
+                    target: dto.Email,
+                    details: "User creation failed via UserManager"
+                    );
                 return ServiceResult<UserDto>.Fail("Användaren kunde inte skapas", ErrorType.NotFound);
             }
 
             var roleExist = await _userRepository.AddUserToRoleAsync(createdUser.Id, dto.Role);
             if (!roleExist)
+            {
+                await _auditLogger.LogAsync(
+                action: "AddUserToRoleFailed",
+                performedBy: "[System/Admin]",
+                target: dto.Email,
+                details: $"Role '{dto.Role}' could not be assigned"
+                );
+
                 return ServiceResult<UserDto>.Fail("Kunde inte skapa en roll till användaren", ErrorType.NotFound);
+            }
+
+            await _auditLogger.LogAsync(
+        action: "CreateUserSuccess",
+        performedBy: "[System/Admin]", // TODO: Hämta från inloggad användare senare
+        target: dto.Email,
+        details: $"User created and assigned role '{dto.Role}'"
+    );
+
             var userDto = UserFactory.FromApplicationUserToDto(user);
             return ServiceResult<UserDto>.Ok(userDto, "Användaren är skapad");
         }
 
-        //TODO: Denna skall vara en serviceResult
-        //TODO: skall vara email
-        public async Task<bool> DeleteUserAsync(string id)
+        public async Task<ServiceResult<bool>> DeleteUserAsync(string email)
         {
-            var user = await _userRepository.GetUserByEmailAsync(id);
-            if (user == null) {  return false; }
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            if (user == null)
+            {
+                await _auditLogger.LogAsync(
+                    action: "DeleteUserFailed",
+                    //TODO: Denna skall ändras när inlogg är på plats
+                    performedBy: "[System/Admin]",
+                    target: email,
+                    details: "User not found"
+                    );
+                return ServiceResult<bool>.Fail("Användaren kunde inte hittas", ErrorType.NotFound);
+            }
 
-            return await _userRepository.DeleteUserAsync(user);
+            var success = await _userRepository.DeleteUserAsync(user);
+            await _auditLogger.LogAsync(
+            action: success ? "DeleteUserSuccess" : "DeleteUserFailed",
+            //TODO: Denna skall ändras när inlogg är på plats
+            performedBy: "[system/admin]", // byt ut mot riktig användare
+            target: email,
+            details: success ? "User successfully deleted" : "Failed to delete user"
+            );
 
+            if (!success)
+            {
+
+                return ServiceResult<bool>.Fail("Användaren kunde inte tas bort");
+            }
+            return ServiceResult<bool>.Ok(true, "Användaren togs bort");
         }
 
         public async Task<IEnumerable<UserDto>> GetAllUsersAsync()

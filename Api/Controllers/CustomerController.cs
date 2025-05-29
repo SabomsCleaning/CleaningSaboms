@@ -87,7 +87,7 @@ namespace CleaningSaboms.Controllers
 
             if (!result.Success)
             {
-                return result.Type switch
+                return result.Error switch
                 {
                     ErrorType.Conflict => BadRequest(result.Message),
                     ErrorType.NotFound => NotFound(result.Message),

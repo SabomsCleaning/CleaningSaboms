@@ -5,7 +5,7 @@
         public bool Success { get; set; }
         public string? Message { get; set; }
 
-        public ErrorType? Type { get; set; }
+        public ErrorType? Error { get; set; }
 
         public static ServiceResult Ok(string? message = null)
         {
@@ -22,7 +22,7 @@
             {
                 Success = false,
                 Message = message,
-                Type = errorType
+                Error = errorType
             };
         }
     }
@@ -45,7 +45,7 @@
             {
                 Success = false,
                 Message = message,
-                Type = errorType
+                Error = errorType
             };
         }
     }
