@@ -11,11 +11,6 @@ namespace CleaningSaboms.Services
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IAuditLogger _auditLogger = auditLogger;
 
-        public Task AddUserToRoleAsync(Guid userId, string roleName)
-        {
-            throw new NotImplementedException();
-        }
-
         private async Task<UserDto> BuildUserDtoAsync(ApplicationUser user)
         {
             var roles = await _userRepository.GetRolesByIdAsync(user.Id);
@@ -127,22 +122,7 @@ namespace CleaningSaboms.Services
             return ServiceResult<UserDto>.Ok(userDto, "Användaren hittad");
         }
 
-        public Task<ServiceResult<ApplicationUser?>> GetUserByIdAsync(Guid userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IList<string>> GetUserRolesAsync(Guid userId)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<ServiceResult<UserDto>> UpdateUserAsync(ApplicationUser user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> UserExistsAsync(string email)
         {
             throw new NotImplementedException();
         }
