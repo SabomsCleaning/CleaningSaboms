@@ -11,7 +11,7 @@ namespace CleaningSaboms.Controllers
         private readonly ILogger<UserController> _logger = logger;
         private readonly IUserService _userService = userService;
 
-        [HttpPost("create")]
+        [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] RegisterUserDto dto)
         {
             if (!ModelState.IsValid)
@@ -29,7 +29,7 @@ namespace CleaningSaboms.Controllers
             return Ok(new { message = "User created successfully" });
         }
 
-        [HttpGet("GetAll")]
+        [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
             var result = await _userService.GetAllUsersAsync();
