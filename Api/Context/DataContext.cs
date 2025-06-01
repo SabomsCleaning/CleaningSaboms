@@ -1,17 +1,19 @@
 ﻿using CleaningSaboms.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 
 namespace CleaningSaboms.Context
 {
-    public class DataContext : IdentityDbContext<Models.ApplicationUser, Models.ApplicationRole, Guid>
+    public class DataContext : IdentityDbContext<ApplicationUser>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
         public DbSet<CustomerEntity> Customers { get; set; } = null!;
         public DbSet<CustomerAddressEntity> CustomerAddresses { get; set; } = null!;
+        public DbSet<AuditLogger> AuditLogs { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
