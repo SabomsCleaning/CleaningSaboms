@@ -16,7 +16,8 @@ namespace CleaningSaboms.Logger
                 Action = action,
                 PerformedBy = performedBy,
                 Target = target,
-                Details = details
+                Details = details,
+                Timestamp = DateTime.UtcNow
             };
 
             _context.AuditLogs.Add(log);

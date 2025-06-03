@@ -30,7 +30,7 @@
     public class ServiceResult<T> : ServiceResult
     {
         public T? Data { get; set; }
-        public static new ServiceResult<T> Ok(T data, string? message = null)
+        public static ServiceResult<T> Ok(T data, string? message = null)
         {
             return new ServiceResult<T>
             {

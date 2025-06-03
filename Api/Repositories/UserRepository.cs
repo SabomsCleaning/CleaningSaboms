@@ -19,9 +19,24 @@ namespace CleaningSaboms.Repositories
             var result = await _userManager.CreateAsync(user, password);
             return (result, user);
         }
-        public Task UpdateUserAsync(ApplicationUser user)
+        public async Task<IdentityResult> UpdateUserAsync(ApplicationUser user, string? newEmail = null)
         {
-            throw new NotImplementedException();
+
+            //TODO: Det är här vi fortsätter i morgon, Den uppdaterar inte userName utan den ligger kvar som den gamla men nu är jag trött
+
+            // Om e-post ändrats – använd rätt metod
+            if (!string.IsNullOrWhiteSpace(newEmail) && !string.Equals(user.Email, newEmail, StringComparison.OrdinalIgnoreCase))
+            {
+                var emailResult = await _userManager.SetEmailAsync(user, newEmail);
+                if (!emailResult.Succeeded)
+                    return emailResult;
+
+                var userNameResult = await _userManager.SetUserNameAsync(user, newEmail);
+                if (!userNameResult.Succeeded)
+                    return userNameResult;
+            }
+            var result = await _userManager.UpdateAsync(user);
+            return result;
         }
         public async Task<bool> DeleteUserAsync(ApplicationUser user)
         {
@@ -48,10 +63,6 @@ namespace CleaningSaboms.Repositories
                 return false;
             }
             return true;
-        }
-        public async Task<IList<string>> GetUserRolesAsync(Guid userId)
-        {
-            throw new NotImplementedException();
         }
         public async Task<bool> AddUserToRoleAsync(string userId, string roleName)
         {

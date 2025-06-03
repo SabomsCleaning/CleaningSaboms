@@ -3,6 +3,7 @@ using CleaningSaboms.Factory;
 using CleaningSaboms.Interfaces;
 using CleaningSaboms.Models;
 using CleaningSaboms.Results;
+using Microsoft.AspNetCore.Identity;
 
 namespace CleaningSaboms.Services
 {
@@ -17,7 +18,7 @@ namespace CleaningSaboms.Services
 
             return new UserDto
             {
-                Email = user.Email,
+                Email = user.Email!,
                 FirstName = user.UserFirstName,
                 LastName = user.UserLastName,
                 PhoneNumber = user.UserPhone,
@@ -122,9 +123,50 @@ namespace CleaningSaboms.Services
             return ServiceResult<UserDto>.Ok(userDto, "Användaren hittad");
         }
 
-        public Task<ServiceResult<UserDto>> UpdateUserAsync(ApplicationUser user)
+        public async Task<ServiceResult<UpdateUserDto>> GetUserByIdAsync(string id)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetUserByIdAsync(id);
+            if (user == null)
+                return ServiceResult<UpdateUserDto>.Fail("Användaren kunde inte hittas", ErrorType.NotFound);
+
+            var userDto = new UpdateUserDto {
+                Id = user.Id,
+                FirstName = user.UserFirstName,
+                LastName = user.UserLastName,
+                PhoneNumber = user.PhoneNumber,
+            };
+
+            return ServiceResult<UpdateUserDto>.Ok(userDto, "Användaren hittad");
         }
+
+        public async Task<ServiceResult> UpdateUserAsync(UpdateUserDto user)
+        {
+            var userExist = await _userRepository.GetUserByIdAsync(user.Id);
+            if (userExist == null)
+                return ServiceResult.Fail("Användaren kunde inte hittas", ErrorType.NotFound);
+
+            userExist.UserFirstName = user.FirstName!;
+            userExist.UserLastName = user.LastName!;
+            userExist.UserPhone = user.PhoneNumber!;
+
+            var result = await _userRepository.UpdateUserAsync(userExist, user.Email!);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return ServiceResult.Fail($"Användaren kunde inte uppdateras: {errors}", ErrorType.Conflict);
+            }
+
+            await _auditLogger.LogAsync(
+                    action: "UpdateUserPerformed",
+                    //TODO: Denna skall ändras när inlogg är på plats
+                    performedBy: "[System/Admin]",
+                    target: user.Email!,
+                    details: "Update User"
+                    );
+
+            return ServiceResult.Ok("Användaren är uppdaterad");
+        }
+
     }
 }

@@ -31,7 +31,7 @@ namespace CleaningSaboms.Tests.Services
         {
             // Arrange
             _userRepoMock.Setup(repo => repo.GetUserByEmailAsync("test@example.com"))
-                .ReturnsAsync((ApplicationUser)null);
+                .ReturnsAsync((ApplicationUser?)null);
 
             // Act
             var result = await _userService.DeleteUserAsync("test@example.com");
@@ -270,6 +270,110 @@ namespace CleaningSaboms.Tests.Services
                 "AddUserToRoleFailed", "[System/Admin]", dto.Email,
                 It.Is<string>(d => d.Contains("could not be assigned"))
             ), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetUserByIdAsync_ShouldReturnUserDto_IfSuccess()
+        {
+            // Arrange
+            var id = "123";
+            var testUser = new ApplicationUser
+            {
+                Id = id,
+                UserFirstName = "Thomas",
+                UserLastName = "Hallstrom",
+                PhoneNumber = "0706815628"
+            };
+
+            _userRepoMock.Setup(repo => repo.GetUserByIdAsync(id))
+                .ReturnsAsync(testUser);
+
+            var service = new UserService(_userRepoMock.Object, _auditLoggerMock.Object);
+
+            // Act
+
+            var result = await service.GetUserByIdAsync(id);
+
+            // Assert
+            Assert.True(result.Success);
+            Assert.NotNull(result.Data);
+            Assert.Equal("Thomas", result.Data.FirstName);
+            Assert.Equal("Användaren hittad", result.Message);
+        }
+
+        [Fact]
+        public async Task GetUserByIdAsync_ReturnFail_WhenUserNotExist()
+        {
+            // Arrange
+            var id = "Not Found";
+
+            _userRepoMock.Setup(repo => repo.GetUserByIdAsync(id))
+                .ReturnsAsync((ApplicationUser?)null);
+
+            var service = new UserService(_userRepoMock.Object, _auditLoggerMock.Object);
+
+            // Act
+            var result = await service.GetUserByIdAsync(id);
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("Användaren kunde inte hittas", result.Message);
+            Assert.Equal(ErrorType.NotFound, result.Error);
+        }
+
+        [Fact]
+        public async Task UpdateUserAsync_ReturnsFail_WhenUserNotFound()
+        {
+            // Arrange
+            var input = new UpdateUserDto { Id = "missing-user" };
+            _userRepoMock.Setup(r => r.GetUserByIdAsync(input.Id))
+                         .ReturnsAsync((ApplicationUser?)null);
+
+            // Act
+            var result = await _userService.UpdateUserAsync(input);
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal(ErrorType.NotFound, result.Error);
+        }
+
+        [Fact]
+        public async Task UpdateUserAsync_ReturnsFail_WhenUpdateFails()
+        {
+            // Arrange
+            var user = new ApplicationUser { Id = "123" };
+            var input = new UpdateUserDto { Id = "123", Email = "fail@example.com", FirstName = "Kalle", LastName = "Karlsson", PhoneNumber = "070999999" };
+
+            _userRepoMock.Setup(r => r.GetUserByIdAsync(input.Id)).ReturnsAsync(user);
+
+            _userRepoMock.Setup(r => r.UpdateUserAsync(It.IsAny<ApplicationUser>(), input.Email))
+                         .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Email already taken" }));
+
+            // Act
+            var result = await _userService.UpdateUserAsync(input);
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.Contains("Email already taken", result.Message);
+            Assert.Equal(ErrorType.Conflict, result.Error);
+        }
+
+        [Fact]
+        public async Task UpdateUserAsync_ReturnsOk_AndLogs_WhenSuccessful()
+        {
+            // Arrange
+            var user = new ApplicationUser { Id = "123" };
+            var input = new UpdateUserDto { Id = "123", Email = "success@example.com", FirstName = "Eva", LastName = "Eriksson", PhoneNumber = "070888888" };
+
+            _userRepoMock.Setup(r => r.GetUserByIdAsync(input.Id)).ReturnsAsync(user);
+            _userRepoMock.Setup(r => r.UpdateUserAsync(user, input.Email)).ReturnsAsync(IdentityResult.Success);
+
+            // Act
+            var result = await _userService.UpdateUserAsync(input);
+
+            // Assert
+            Assert.True(result.Success);
+            Assert.Equal("Användaren är uppdaterad", result.Message);
         }
     }
 }
