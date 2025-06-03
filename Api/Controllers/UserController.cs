@@ -58,6 +58,23 @@ namespace CleaningSaboms.Controllers
 
             return BadRequest(result);
         }
+
+        [HttpPut]
+        public async Task <IActionResult> UpdateUser([FromBody] UpdateUserDto user)
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid model state for UpdateUser request.");
+                return BadRequest(ModelState);
+            }
+            var result = await _userService.UpdateUserAsync(user);
+            if (!result.Success)
+            {
+                _logger.LogError("Failed to update user: {Message}", result.Message);
+                return BadRequest(result.Message);
+            }
+            return Ok(new { message = "User updated successfully" });
+        }
     }
 
 }
