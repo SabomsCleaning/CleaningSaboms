@@ -19,8 +19,8 @@ namespace CleaningSaboms.Controllers
                 _logger.LogWarning("Invalid model state for CreateUser request.");
                 return BadRequest(ModelState);
             }
-            var result = await _userService.CreateUserAsync(dto); // Replace with actual DTO and password handling
-            // Logic to create a user
+            var result = await _userService.CreateUserAsync(dto);
+
             if (!result.Success)
             {
                 _logger.LogError("Failed to create user: {Message}", result.Message);
@@ -40,9 +40,9 @@ namespace CleaningSaboms.Controllers
         public async Task<IActionResult> GetUserByEmail(string email)
         {
             var result = await _userService.GetUserByEmailAsync(email);
-            if (result == null)
+            if (!result.Success)
                 return NotFound();
-            return Ok(result);
+            return Ok(result.Data);
         }
 
         [HttpDelete("{email}")]
@@ -73,7 +73,7 @@ namespace CleaningSaboms.Controllers
                 _logger.LogError("Failed to update user: {Message}", result.Message);
                 return BadRequest(result.Message);
             }
-            return Ok(new { message = "User updated successfully" });
+            return Ok(result);
         }
     }
 
