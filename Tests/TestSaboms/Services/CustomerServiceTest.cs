@@ -8,7 +8,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CleaningSaboms.Tests.Services
+namespace TestSaboms.Services
 {
     public class CustomerServiceTests
     {

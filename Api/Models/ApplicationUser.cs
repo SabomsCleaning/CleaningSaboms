@@ -17,6 +17,7 @@ namespace CleaningSaboms.Models
         [MaxLength(20)]
         public string UserPhone { get; set; } = null!;
 
+        public ICollection<BookingCleanerEntity> Bookings { get; set; } = new List<BookingCleanerEntity>();
 
     }
 }

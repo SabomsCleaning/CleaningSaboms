@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CleaningSaboms.Tests.Services
+namespace TestSaboms.Services
 {
     public class UserServiceTests
     {

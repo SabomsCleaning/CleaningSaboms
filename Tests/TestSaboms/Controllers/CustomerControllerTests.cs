@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CleaningSaboms.Tests.Controllers
+namespace TestSaboms.Controllers
 {
     public class CustomerControllerTests
     {

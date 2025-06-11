@@ -14,6 +14,9 @@ namespace CleaningSaboms.Context
         public DbSet<CustomerEntity> Customers { get; set; } = null!;
         public DbSet<CustomerAddressEntity> CustomerAddresses { get; set; } = null!;
         public DbSet<AuditLogger> AuditLogs { get; set; }
+        public DbSet<BookingCleanerEntity> BookingCleaner { get; set; }
+        public DbSet<BookingEntity> Booking {  get; set; }
+        public DbSet<ServiceType> ServiceType { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -28,6 +31,10 @@ namespace CleaningSaboms.Context
                 .WithMany (a => a.Customers)
                 .HasForeignKey(c => c.CustomerAddressId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<ServiceType>()
+                .Property(s => s.BasePrice)
+                .HasPrecision(10, 2);
         }
     }
 }

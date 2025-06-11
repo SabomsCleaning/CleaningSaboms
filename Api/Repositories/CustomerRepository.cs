@@ -51,7 +51,6 @@ namespace CleaningSaboms.Repositories
                 .Include(c => c.CustomerAddress)
                 .ToListAsync();
         }
-
         public async Task<bool> AddressExistsAsync(CustomerDto dto)
         {
             return await _context.Customers.AnyAsync(c =>
@@ -59,10 +58,13 @@ namespace CleaningSaboms.Repositories
                         c.CustomerAddress.CustomerCity == dto.CustomerCity &&
                         c.CustomerAddress.CustomerPostalCode == dto.CustomerPostalCode);
         }
-
         public async Task<bool> CustomerExistsAsync(string email)
         {
             return await _context.Customers.AnyAsync(c => c.CustomerEmail == email);
+        }
+        public async Task<bool> CustomerExistsIdAsync(Guid customerId)
+        {
+            return await _context.Customers.AnyAsync(c => c.Id == customerId);
         }
     }
 }

@@ -27,6 +27,17 @@ namespace CleaningSaboms.Services
             return ServiceResult<CustomerEntity>.Ok(entity, "Skapad");
         }
 
+        //TODO: Här saknas det testet
+        public async Task<bool> CustomerExistEmail(string email)
+        {
+            return await _customerRepository.CustomerExistsAsync(email);
+        }
+        //TODO: Här saknas det tester
+        public async Task<bool> CustomerExistId(Guid Id)
+        {
+            return await _customerRepository.CustomerExistsIdAsync(Id);
+        }
+
         public async Task<ServiceResult<bool>> DeleteCustomerAsync(Guid id)
         {
             var result = await _customerRepository.DeleteCustomerAsync(id);
@@ -50,7 +61,6 @@ namespace CleaningSaboms.Services
             return customerDtos;
         }
 
-
         public async Task<ServiceResult<CustomerDto>> GetCustomerByIdAsync(Guid id)
         {
             var result = await _customerRepository.GetCustomerByIdAsync(id);
@@ -61,7 +71,7 @@ namespace CleaningSaboms.Services
             var customerDto = CustomerFactory.ToDto(result);
             return ServiceResult<CustomerDto>.Ok(customerDto, "Kund hittades.");
         }
-
+        //TODO: Här saknas det testet
         public async Task<ServiceResult<CustomerDto>> UpdateCustomerAsync(Guid id, CustomerDto customer)
         {
             var emailExist = await _customerRepository.CustomerExistsAsync(customer.CustomerEmail);

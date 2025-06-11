@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace CleaningSaboms.Tests.Controllers
+namespace TestSaboms.Controllers
 {
     public class UserControllerTests
     {
@@ -144,7 +144,7 @@ namespace CleaningSaboms.Tests.Controllers
             {
                 Success = false,
                 Message = "Användaren kunde inte hittas",
-                Error = Results.ErrorType.NotFound
+                Error = ErrorType.NotFound
             };
 
             _userServiceMock
@@ -158,7 +158,7 @@ namespace CleaningSaboms.Tests.Controllers
 
             Assert.False(returnedValue.Success);
             Assert.Equal("Användaren kunde inte hittas", returnedValue.Message);
-            Assert.Equal(Results.ErrorType.NotFound, returnedValue.Error);
+            Assert.Equal(ErrorType.NotFound, returnedValue.Error);
         }
 
 

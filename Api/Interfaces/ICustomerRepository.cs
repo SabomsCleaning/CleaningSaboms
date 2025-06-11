@@ -13,5 +13,6 @@ namespace CleaningSaboms.Interfaces
         Task<IEnumerable<CustomerEntity>> GetAllCustomersAsync();
         Task<bool> AddressExistsAsync(CustomerDto dto);
         Task<bool> CustomerExistsAsync(string email);
+        Task<bool> CustomerExistsIdAsync(Guid customerId);
     }
 }
