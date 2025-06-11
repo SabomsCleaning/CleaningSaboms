@@ -3,6 +3,7 @@ using CleaningSaboms.Interfaces;
 using CleaningSaboms.Models;
 using CleaningSaboms.Results;
 using CleaningSaboms.Services;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Threading.Tasks;
@@ -14,11 +15,13 @@ namespace CleaningSaboms.Tests.Services
     {
         private readonly Mock<ICustomerRepository> _customerRepoMock;
         private readonly CustomerService _service;
+        private readonly Mock<ILogger<CustomerService>> _logger;
 
         public CustomerServiceTests()
         {
             _customerRepoMock = new Mock<ICustomerRepository>();
-            _service = new CustomerService(_customerRepoMock.Object);
+            _logger = new Mock<ILogger<CustomerService>>();
+            _service = new CustomerService(_customerRepoMock.Object, _logger.Object);
         }
 
         [Fact]
