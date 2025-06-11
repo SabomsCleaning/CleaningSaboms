@@ -1,6 +1,7 @@
 ﻿using CleaningSaboms.Context;
 using CleaningSaboms.Interfaces;
 using CleaningSaboms.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CleaningSaboms.Repositories
 {
@@ -8,10 +9,12 @@ namespace CleaningSaboms.Repositories
     {
         private readonly DataContext _context = context;
 
-        public async Task CreateBooking(BookingEntity booking)
+        public async Task CreateBookingAsync(BookingEntity booking)
         {
             _context.Booking.Add(booking);
             await _context.SaveChangesAsync();
         }
+
+        
     }
 }

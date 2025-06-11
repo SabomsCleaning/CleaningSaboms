@@ -1,5 +1,7 @@
 ﻿using CleaningSaboms.Dto;
+using CleaningSaboms.Factory;
 using CleaningSaboms.Interfaces;
+using CleaningSaboms.Models;
 using CleaningSaboms.Results;
 
 namespace CleaningSaboms.Services
@@ -8,11 +10,13 @@ namespace CleaningSaboms.Services
     {
         private readonly IBookingRepository _bookingRepository;
         private readonly ICustomerService _customerService;
+        private readonly IBookingFactory _bookingFactory;
 
-        public BookingService(IBookingRepository bookingRepository, ICustomerService customerService)
+        public BookingService(IBookingRepository bookingRepository, ICustomerService customerService, IBookingFactory bookingFactory)
         {
             _bookingRepository = bookingRepository;
             _customerService = customerService;
+            _bookingFactory = bookingFactory;
         }
 
         public async Task<ServiceResult> CreateBookingAsync(BookingDto dto)
@@ -24,7 +28,7 @@ namespace CleaningSaboms.Services
 
             if (dto.ScheduleEndTime < dto.ScheduleStartTime)
             {
-                return ServiceResult.Fail("Startiden är efter avsluttiden", ErrorType.Forbidden);
+                return ServiceResult.Fail("Sluttiden måste vara efter starttiden", ErrorType.Forbidden);
             }
 
             var customerExist = await _customerService.CustomerExistId(dto.CustomerId);
@@ -34,8 +38,12 @@ namespace CleaningSaboms.Services
                 return ServiceResult.Fail("Kunde inte hitta kunden", ErrorType.NotFound);
             }
 
+            var booking = await _bookingFactory.CreateFromDtoAsync(dto);
 
+            await _bookingRepository.CreateBookingAsync(booking);
                 return ServiceResult.Ok("Bokningen är skapad");
         }
+
+        
     }
 }

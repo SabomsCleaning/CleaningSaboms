@@ -2,13 +2,11 @@
 {
     public class BookingEntity
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public int BookingNumber { get; set; }
         public Guid CustomerId { get; set; }
-
-        public int ServiceType { get; set; }
+        public int ServiceTypeId { get; set; }
         public ServiceType Service { get; set; } = null!;
-
         public DateTime ScheduleStartTime { get; set; }
         public DateTime ScheduleEndTime { get; set; }
         public DateTime? ActualStartTime { get; set; }

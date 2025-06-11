@@ -1,8 +1,6 @@
 ﻿using CleaningSaboms.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
 namespace CleaningSaboms.Context
 {
@@ -15,7 +13,7 @@ namespace CleaningSaboms.Context
         public DbSet<CustomerAddressEntity> CustomerAddresses { get; set; } = null!;
         public DbSet<AuditLogger> AuditLogs { get; set; }
         public DbSet<BookingCleanerEntity> BookingCleaner { get; set; }
-        public DbSet<BookingEntity> Booking {  get; set; }
+        public DbSet<BookingEntity> Booking { get; set; }
         public DbSet<ServiceType> ServiceType { get; set; }
 
 
@@ -28,13 +26,23 @@ namespace CleaningSaboms.Context
 
             builder.Entity<CustomerEntity>()
                 .HasOne(c => c.CustomerAddress)
-                .WithMany (a => a.Customers)
+                .WithMany(a => a.Customers)
                 .HasForeignKey(c => c.CustomerAddressId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<ServiceType>()
                 .Property(s => s.BasePrice)
                 .HasPrecision(10, 2);
+
+            builder.Entity<BookingEntity>(builder =>
+                {
+                    builder.Property(b => b.Id)
+                    .HasDefaultValueSql("NEWID()");
+
+                    builder.Property(b => b.BookingNumber)
+                    .ValueGeneratedOnAdd();
+                }
+            );
         }
     }
 }
