@@ -13,6 +13,8 @@ namespace CleaningSaboms.Services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAuditLogger, AuditLogger>();
+            services.AddScoped<IServiceTypeService, ServiceTypeService>();
+            services.AddScoped<IServiceTypeRepository, ServiceTypeRepository>();
             return services;
         }
     }
