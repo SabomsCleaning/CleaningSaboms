@@ -6,24 +6,28 @@ using CleaningSaboms.Results;
 
 namespace CleaningSaboms.Services
 {
-    public class CustomerService(ICustomerRepository customerRepository) : ICustomerService
+    public class CustomerService(ICustomerRepository customerRepository, ILogger<CustomerService> logger) : ICustomerService
     {
         private readonly ICustomerRepository _customerRepository = customerRepository;
+        private readonly ILogger<CustomerService> _logger = logger;
 
         public async Task<ServiceResult<CustomerEntity>> CreateCustomerAsync(CustomerDto customer)
         {
             var customerExist = await _customerRepository.CustomerExistsAsync(customer.CustomerEmail);
             if (customerExist)
             {
+                _logger.LogWarning($"Customer with {customer.CustomerEmail} already exist");
                 return ServiceResult<CustomerEntity>.Fail("Kunden finns redan i databasen");
             }
             var addressExist = await _customerRepository.AddressExistsAsync(customer);
             if (addressExist)
             {
+                _logger.LogWarning($"Customer {customer.CustomerAddressLine} is already in system");
                 return ServiceResult<CustomerEntity>.Fail("Kundens adress finns redan i databasen");
             }
             var entity = CustomerFactory.FromDto(customer);
             _ = await _customerRepository.CreateCustomerAsync(entity);
+            _logger.LogInformation($"Customer {customer.CustomerFirstName} is added to database");
             return ServiceResult<CustomerEntity>.Ok(entity, "Skapad");
         }
 
@@ -43,8 +47,10 @@ namespace CleaningSaboms.Services
             var result = await _customerRepository.DeleteCustomerAsync(id);
             if (!result)
             {
+                _logger.LogWarning($"Customer could not be found: {id}");
                 return ServiceResult<bool>.Fail("Kund hittades inte.", ErrorType.NotFound);
             }
+            _logger.LogInformation($"Customer deleted: {result}");
             return ServiceResult<bool>.Ok(true, "Kund borttagen.");
         }
 
